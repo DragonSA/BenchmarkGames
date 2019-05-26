@@ -1,21 +1,21 @@
 ﻿module BinaryTrees
 
-type Tree =
-    | Node of Tree option * Tree option
+[<AllowNullLiteral>]
+type Tree(left: Tree, right: Tree) =
+    member __.Check() =
+        if isNull left then
+            1
+        else
+            1 + left.Check() + right.Check()
 
 let rec makeTree depth =
     match depth with
-    | 0 -> Node(None, None)
+    | 0 -> Tree(null, null)
     | _ ->
         let depth = depth - 1
-        Node (Some(makeTree depth), Some(makeTree depth))
+        Tree(makeTree depth, makeTree depth)
 
-let rec checkTree tree =
-    match tree with
-    | Node(None, None) -> 1
-    | Node(Some(left), Some(right)) -> 1 + (checkTree left) + (checkTree right)
-
-let makeAndCheckTree = makeTree >> checkTree
+let makeAndCheckTree depth = (makeTree depth).Check()
 
 let rec iterativeCheck depth iterations check =
     match iterations with
@@ -39,5 +39,5 @@ let main argv =
             <| iterativeCheck depth iterations 0
     printf "long lived tree of depth %i\t check: %i\n"
         <| maxDepth
-        <| checkTree longLivedTree
+        <| longLivedTree.Check()
     0
